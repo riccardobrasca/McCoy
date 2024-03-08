@@ -37,7 +37,9 @@ lemma Lemma1 {Q : R[X]} (h : Q ∈ Ann P) : m P ≤ natDegree Q := by
   exact Nat.sInf_le (Exists.intro Q { left := h, right := rfl })
   done
 
-lemma Lemma2 (h : P ∉ R[X]⁰) : ∃ Q ∈ Ann P, natDegree Q = m P := by
+variable (h : P ∉ R[X]⁰)
+
+lemma Lemma2 : ∃ Q ∈ Ann P, natDegree Q = m P := by
   dsimp[m]
   have hnonvide : Set.Nonempty (Anndeg P) := by
     have := Anndeg_nonvide P h
@@ -62,7 +64,10 @@ lemma Lemma3 (h' : m P = 0 ) : ∃ (a : R), a ≠ 0 ∧ a • P = 0 := by
   rw [<-Polynomial.smul_eq_C_mul] at hQ
   simp
   rw [C_eq_zero] at hQ
-  exact
+  use x
+  constructor
+  · exact hQ.1.2
+  · exact hQ.1.1
   done
 
 theorem McCoy : P ∉ R[X]⁰ ↔ ∃ (a : R), a ≠ 0 ∧ a • P = 0 := by
