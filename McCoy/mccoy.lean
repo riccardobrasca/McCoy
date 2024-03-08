@@ -68,9 +68,45 @@ lemma Lemma3 (h : P ∉ R[X]⁰) (h' : m P = 0 ) : ∃ (a : R), a ≠ 0 ∧ a �
   · exact hQ.1.1
   done
 
+lemma Lemma4 (h' : m P ≠ 0) (Q : R[X]) (hQ : Q ∈ Ann P) :
+    ∃ i, Q.leadingCoeff * P.coeff i ≠ 0 := by
+  by_contra!
+  have hP : leadingCoeff Q • P = 0 := by
+    exact leadingCoeff_eq_zero.mp (this (natDegree (leadingCoeff Q • P)))
+  have hceoffQ : C (leadingCoeff Q) ∈ Ann P := by
+    dsimp [Ann]
+    constructor
+    · rw [Polynomial.smul_eq_C_mul] at hP
+      exact hP
+    · simp
+      dsimp[Ann] at hQ
+      exact hQ.2
+  apply h'
+  have hm : m P ≤ 0 := by
+    dsimp[m]
+    simp
+    left
+    dsimp[Anndeg]
+    simp
+    use C ( leadingCoeff Q)
+    constructor
+    · assumption
+    · simp
+  exact Nat.le_zero.mp hm
+  done
+
+
 theorem McCoy : P ∉ R[X]⁰ ↔ ∃ (a : R), a ≠ 0 ∧ a • P = 0 := by
   constructor
-  · sorry
+  · intro h
+    apply  Lemma3 P h
+    by_contra! Hm
+    cases' Lemma2 P h with Q hQ
+    cases' hQ with hQP hQdeg
+    dsimp[Ann] at hQP
+    cases' hQP with hQP1 hQP2
+    let l := natDegree (leadingCoeff Q • P)
+    sorry
   · intro h h1
     cases' h with a h3
     cases' h3 with h4 h5
