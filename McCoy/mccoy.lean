@@ -37,9 +37,7 @@ lemma Lemma1 {Q : R[X]} (h : Q ∈ Ann P) : m P ≤ natDegree Q := by
   exact Nat.sInf_le (Exists.intro Q { left := h, right := rfl })
   done
 
-variable (h : P ∉ R[X]⁰)
-
-lemma Lemma2 : ∃ Q ∈ Ann P, natDegree Q = m P := by
+lemma Lemma2 (h : P ∉ R[X]⁰) : ∃ Q ∈ Ann P, natDegree Q = m P := by
   dsimp[m]
   have hnonvide : Set.Nonempty (Anndeg P) := by
     have := Anndeg_nonvide P h
@@ -50,7 +48,7 @@ lemma Lemma2 : ∃ Q ∈ Ann P, natDegree Q = m P := by
   exact this
   done
 
-lemma Lemma3 (h' : m P = 0 ) : ∃ (a : R), a ≠ 0 ∧ a • P = 0 := by
+lemma Lemma3 (h : P ∉ R[X]⁰) (h' : m P = 0 ) : ∃ (a : R), a ≠ 0 ∧ a • P = 0 := by
   have := Lemma2 P h
   rw [h'] at this
   dsimp [Ann] at this
