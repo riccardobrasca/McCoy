@@ -48,6 +48,23 @@ lemma Lemma2 (h : P ∉ R[X]⁰) : ∃ Q ∈ Ann P, natDegree Q = m P := by
   exact this
   done
 
+lemma Lemma3 (h' : m P = 0 ) : ∃ (a : R), a ≠ 0 ∧ a • P = 0 := by
+  have := Lemma2 P h
+  rw [h'] at this
+  dsimp [Ann] at this
+  cases' this with Q hQ
+  have h'Q : ∃ (x : R), Polynomial.C x = Q := by
+   rw [Polynomial.natDegree_eq_zero] at hQ
+   exact hQ.right
+  cases' h'Q with x hx
+  symm at hx
+  rw [hx] at hQ
+  rw [<-Polynomial.smul_eq_C_mul] at hQ
+  simp
+  rw [C_eq_zero] at hQ
+  exact
+  done
+
 theorem McCoy : P ∉ R[X]⁰ ↔ ∃ (a : R), a ≠ 0 ∧ a • P = 0 := by
   constructor
   · sorry
