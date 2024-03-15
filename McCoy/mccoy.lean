@@ -94,6 +94,7 @@ lemma Lemma4 (h' : m P ≠ 0) (Q : R[X]) (hQ : Q ∈ Ann P) :
     · simp
   exact Nat.le_zero.mp hm
   done
+
 lemma Lemma5 (h' : m P ≠ 0) (Q : R[X]) (hQ : Q ∈ Ann P) :
     ∃ i, P.coeff i • Q ≠ 0 := by
   obtain ⟨i, hi⟩ := Lemma4 P h' Q hQ
@@ -103,15 +104,29 @@ lemma Lemma5 (h' : m P ≠ 0) (Q : R[X]) (hQ : Q ∈ Ann P) :
   · exact hi
   · rw [Polynomial.leadingCoeff_C, mul_comm]
     exact hi
-
-
-
-
-
-  sorry
   done
 
+noncomputable
+def l (Q : R[X]) := sSup { i | P.coeff i • Q ≠ 0}
 
+lemma Lemma6 (Q : R[X]) (hQ : Q ∈ Ann P) : (P.coeff (l P Q) • Q) * P = 0 := by
+  rw [Polynomial.smul_eq_C_mul, mul_assoc]
+  dsimp [Ann] at hQ
+  rw [hQ.1, mul_zero]
+
+lemma Lemma7 (h' : m P ≠ 0) (Q : R[X]) (hQ : Q ∈ Ann P) :
+    P.coeff (l P Q) • Q ≠ 0 := by
+  have : l P Q ∈ { i | P.coeff i • Q ≠ 0 } := by
+    apply Nat.sSup_mem
+    · obtain ⟨i, hi⟩ := Lemma5 P h' Q hQ
+      use i
+      exact hi
+    · use P.natDegree
+      intro i hi
+      by_contra! H
+      apply hi
+      rw [Polynomial.coeff_eq_zero_of_natDegree_lt H, zero_smul]
+  exact this
 
 theorem McCoy : P ∉ R[X]⁰ ↔ ∃ (a : R), a ≠ 0 ∧ a • P = 0 := by
   constructor
