@@ -128,18 +128,42 @@ lemma Lemma7 (h' : m P ≠ 0) (Q : R[X]) (hQ : Q ∈ Ann P) :
       rw [Polynomial.coeff_eq_zero_of_natDegree_lt H, zero_smul]
   exact this
 
+lemma Lemma8 (h' : m P ≠ 0) (Q : R[X]) (hQ : Q ∈ Ann P) (hmQ : natDegree Q = m P) :
+    P.coeff (l P Q) • Q.leadingCoeff = 0 := by
+  sorry
+
+lemma Lemma9 (h' : m P ≠ 0) (Q : R[X]) (hQ : Q ∈ Ann P) (hmQ : natDegree Q = m P) :
+    natDegree (P.coeff (l P Q) • Q) < natDegree Q := by
+  apply lt_of_le_of_ne
+  · exact natDegree_smul_le (coeff P (l P Q)) Q
+  · intro h
+    --rw [smul_eq_C_mul] at h
+    have := Lemma8 P h' Q hQ hmQ
+
+    sorry
+
 theorem McCoy : P ∉ R[X]⁰ ↔ ∃ (a : R), a ≠ 0 ∧ a • P = 0 := by
   constructor
   · intro h
     apply  Lemma3 P h
     by_contra! Hm
-    have H'm := Lemma4 P Hm
     cases' Lemma2 P h with Q hQ
     cases' hQ with hQP hQdeg
-    dsimp[Ann] at hQP
-    cases' hQP with hQP1 hQP2
-    let l := natDegree (leadingCoeff Q • P)
-    sorry
+    let Q' := P.coeff (l P Q) • Q
+    have hQ' : Q' ∈ Ann P := by
+      dsimp [Ann]
+      constructor
+      · exact Lemma6 P Q hQP
+      · exact Lemma7 P Hm Q hQP
+    have key : natDegree Q' < natDegree Q := by exact Lemma9 P Hm Q hQP hQdeg
+    rw [hQdeg] at key
+    have hdegQ' : natDegree Q' ∈ Anndeg P := by
+      dsimp [Anndeg]
+      use Q'
+    rw [lt_iff_not_le] at key
+    apply key
+    dsimp [m]
+    exact Nat.sInf_le hdegQ'
   · intro h h1
     cases' h with a h3
     cases' h3 with h4 h5
