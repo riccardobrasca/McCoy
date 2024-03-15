@@ -94,6 +94,23 @@ lemma Lemma4 (h' : m P ≠ 0) (Q : R[X]) (hQ : Q ∈ Ann P) :
     · simp
   exact Nat.le_zero.mp hm
   done
+lemma Lemma5 (h' : m P ≠ 0) (Q : R[X]) (hQ : Q ∈ Ann P) :
+    ∃ i, P.coeff i • Q ≠ 0 := by
+  obtain ⟨i, hi⟩ := Lemma4 P h' Q hQ
+  use i
+  rw [<- Polynomial.leadingCoeff_ne_zero, Polynomial.smul_eq_C_mul,
+    Polynomial.leadingCoeff_mul', Polynomial.leadingCoeff_C, mul_comm]
+  · exact hi
+  · rw [Polynomial.leadingCoeff_C, mul_comm]
+    exact hi
+
+
+
+
+
+  sorry
+  done
+
 
 
 theorem McCoy : P ∉ R[X]⁰ ↔ ∃ (a : R), a ≠ 0 ∧ a • P = 0 := by
@@ -101,6 +118,7 @@ theorem McCoy : P ∉ R[X]⁰ ↔ ∃ (a : R), a ≠ 0 ∧ a • P = 0 := by
   · intro h
     apply  Lemma3 P h
     by_contra! Hm
+    have H'm := Lemma4 P Hm
     cases' Lemma2 P h with Q hQ
     cases' hQ with hQP hQdeg
     dsimp[Ann] at hQP
