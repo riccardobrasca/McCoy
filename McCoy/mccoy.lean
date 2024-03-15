@@ -137,10 +137,10 @@ lemma Lemma9 (h' : m P ≠ 0) (Q : R[X]) (hQ : Q ∈ Ann P) (hmQ : natDegree Q =
   apply lt_of_le_of_ne
   · exact natDegree_smul_le (coeff P (l P Q)) Q
   · intro h
-    --rw [smul_eq_C_mul] at h
     have := Lemma8 P h' Q hQ hmQ
-
-    sorry
+    rw [← coeff_natDegree, ← h, ← coeff_smul, coeff_natDegree, leadingCoeff_eq_zero] at this
+    apply Lemma7 P h' Q hQ
+    exact this
 
 theorem McCoy : P ∉ R[X]⁰ ↔ ∃ (a : R), a ≠ 0 ∧ a • P = 0 := by
   constructor
