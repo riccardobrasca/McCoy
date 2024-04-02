@@ -1,6 +1,6 @@
 import Mathlib
 
-open Polynomial nonZeroDivisors
+open Polynomial nonZeroDivisors BigOperators
 
 variable {R : Type* } [CommRing R] (P : R[X])
 
@@ -108,7 +108,7 @@ lemma Lemma5 (h' : m P ≠ 0) (Q : R[X]) (hQ : Q ∈ Ann P) :
   done
 
 noncomputable
-def l (Q : R[X]) := sSup { i | P.coeff i • Q ≠ 0}
+def l (Q : R[X]) := sSup {i | P.coeff i • Q ≠ 0}
 
 lemma Lemma6 (Q : R[X]) (hQ : Q ∈ Ann P) : (P.coeff (l P Q) • Q) * P = 0 := by
   rw [Polynomial.smul_eq_C_mul, mul_assoc]
@@ -129,20 +129,25 @@ lemma Lemma7 (h' : m P ≠ 0) (Q : R[X]) (hQ : Q ∈ Ann P) :
       rw [Polynomial.coeff_eq_zero_of_natDegree_lt H, zero_smul]
   exact this
 
-lemma Lemma11 (h' : m P ≠ 0) (Q : R[X]) (hQ : Q ∈ Ann P) (hmQ : natDegree Q = m P) :
+open Finset Nat
+lemma Lemma11 (Q : R[X]) (hmQ : natDegree Q = m P) :
   (Q * P).coeff (l P Q + m P) = P.coeff (l P Q) •  leadingCoeff Q := by
-  rw [ Polynomial.coeff_mul]
+  rw [mul_comm Q, Polynomial.coeff_mul]
 
   have h1 : ∀ i, ∀j , ( l P Q < i) → P.coeff i * Q.coeff j = 0 := by
     intro k j H
     dsimp [l] at H
-    have H' : P.coeff k • Q = 0
-    by_contra!
-    have H1 : k ∈ {i | P.coeff i • Q ≠  0}
-    exact this
-    rw [lt_iff_not_le] at H
-    apply H
-    sorry
+    have H' : P.coeff k • Q = 0 := by
+      by_contra!
+      rw [lt_iff_not_le] at H
+      apply H
+      apply le_csSup
+      · use P.natDegree
+        intro i hi
+        by_contra! H
+        apply hi
+        rw [Polynomial.coeff_eq_zero_of_natDegree_lt H, zero_smul]
+      · exact this
     rw [<-Polynomial.C_mul'] at H'
     rw [<-Polynomial.coeff_C_mul]
     exact Mathlib.Tactic.ComputeDegree.coeff_congr (congrFun (congrArg coeff H') j) rfl rfl
@@ -151,8 +156,25 @@ lemma Lemma11 (h' : m P ≠ 0) (Q : R[X]) (hQ : Q ∈ Ann P) (hmQ : natDegree Q 
     intro k j H
     rw [<-hmQ] at H
     rw [Polynomial.coeff_eq_zero_of_natDegree_lt H, mul_zero]
-
-  sorry
+  rw [sum_antidiagonal_eq_sum_range_succ (fun i j ↦ P.coeff i * Q.coeff j), ← succ_add, sum_range_add,
+    sum_range_succ]
+  have h3 : coeff P (l P Q) * coeff Q (l P Q + m P - l P Q) = coeff P (l P Q) • leadingCoeff Q := by
+    simp [leadingCoeff, hmQ]
+  rw [h3, add_comm _ (coeff P (l P Q) • leadingCoeff Q), add_assoc]
+  simp only [smul_eq_mul, add_right_eq_self]
+  rw [← zero_add (0 : R)]
+  congr
+  · apply Finset.sum_eq_zero
+    intro k hk
+    apply h2
+    simp only [mem_range] at hk
+    rw [add_comm, Nat.add_sub_assoc hk.le]
+    simp only [lt_add_iff_pos_right, tsub_pos_iff_lt]
+    exact hk
+  · apply Finset.sum_eq_zero
+    intro k _
+    apply h1
+    linarith
   done
 
 
@@ -176,6 +198,7 @@ lemma Lemma8 (h' : m P ≠ 0) (Q : R[X]) (hQ : Q ∈ Ann P) (hmQ : natDegree Q =
   rw [hQ1] at h''
   apply h
   rw [<- h'']
+  done
 
 
 
@@ -189,7 +212,7 @@ lemma Lemma9 (h' : m P ≠ 0) (Q : R[X]) (hQ : Q ∈ Ann P) (hmQ : natDegree Q =
     have := Lemma8 P h' Q hQ hmQ
     rw [← coeff_natDegree, ← h, ← coeff_smul, coeff_natDegree, leadingCoeff_eq_zero] at this
     apply Lemma7 P h' Q hQ
-    exact
+    exact this
 
 
 
