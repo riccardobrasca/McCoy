@@ -102,6 +102,7 @@ lemma Lemma5 (h' : m P ≠ 0) (Q : R[X]) (hQ : Q ∈ Ann P) :
   rw [<- Polynomial.leadingCoeff_ne_zero, Polynomial.smul_eq_C_mul,
     Polynomial.leadingCoeff_mul', Polynomial.leadingCoeff_C, mul_comm]
   · exact hi
+
   · rw [Polynomial.leadingCoeff_C, mul_comm]
     exact hi
   done
@@ -128,19 +129,69 @@ lemma Lemma7 (h' : m P ≠ 0) (Q : R[X]) (hQ : Q ∈ Ann P) :
       rw [Polynomial.coeff_eq_zero_of_natDegree_lt H, zero_smul]
   exact this
 
-lemma Lemma8 (h' : m P ≠ 0) (Q : R[X]) (hQ : Q ∈ Ann P) (hmQ : natDegree Q = m P) :
-    P.coeff (l P Q) • Q.leadingCoeff = 0 := by
+lemma Lemma11 (h' : m P ≠ 0) (Q : R[X]) (hQ : Q ∈ Ann P) (hmQ : natDegree Q = m P) :
+  (Q * P).coeff (l P Q + m P) = P.coeff (l P Q) •  leadingCoeff Q := by
+  rw [ Polynomial.coeff_mul]
+
+  have h1 : ∀ i, ∀j , ( l P Q < i) → P.coeff i * Q.coeff j = 0 := by
+    intro k j H
+    dsimp [l] at H
+    have H' : P.coeff k • Q = 0
+    by_contra!
+    have H1 : k ∈ {i | P.coeff i • Q ≠  0}
+    exact this
+    rw [lt_iff_not_le] at H
+    apply H
+    sorry
+    rw [<-Polynomial.C_mul'] at H'
+    rw [<-Polynomial.coeff_C_mul]
+    exact Mathlib.Tactic.ComputeDegree.coeff_congr (congrFun (congrArg coeff H') j) rfl rfl
+
+  have h2 : ∀ i, ∀j , ( m P < j) → P.coeff i * Q.coeff j = 0 := by
+    intro k j H
+    rw [<-hmQ] at H
+    rw [Polynomial.coeff_eq_zero_of_natDegree_lt H, mul_zero]
+
   sorry
+  done
+
+
+lemma Lemma10 (h' : m P ≠ 0) (Q : R[X]) (hQ : Q ∈ Ann P) (hmQ : natDegree Q = m P)
+ (h : P.coeff (l P Q) •  leadingCoeff Q ≠ 0) :
+   leadingCoeff (Q * P) = P.coeff (l P Q) •  leadingCoeff Q := by
+
+   sorry
+   done
+
+
+
+
+lemma Lemma8 (h' : m P ≠ 0) (Q : R[X]) (hQ : Q ∈ Ann P) (hmQ : natDegree Q = m P) :
+    P.coeff (l P Q) •  Q.leadingCoeff = 0 := by
+  dsimp [Ann] at hQ
+  by_contra! h
+  have h'' := Lemma10 P h' Q hQ hmQ h
+  have hQ1 := hQ.1
+  rw [<-Polynomial.leadingCoeff_eq_zero] at hQ1
+  rw [hQ1] at h''
+  apply h
+  rw [<- h'']
+
+
+
 
 lemma Lemma9 (h' : m P ≠ 0) (Q : R[X]) (hQ : Q ∈ Ann P) (hmQ : natDegree Q = m P) :
     natDegree (P.coeff (l P Q) • Q) < natDegree Q := by
+
   apply lt_of_le_of_ne
   · exact natDegree_smul_le (coeff P (l P Q)) Q
   · intro h
     have := Lemma8 P h' Q hQ hmQ
     rw [← coeff_natDegree, ← h, ← coeff_smul, coeff_natDegree, leadingCoeff_eq_zero] at this
     apply Lemma7 P h' Q hQ
-    exact this
+    exact
+
+
 
 theorem McCoy : P ∉ R[X]⁰ ↔ ∃ (a : R), a ≠ 0 ∧ a • P = 0 := by
   constructor
