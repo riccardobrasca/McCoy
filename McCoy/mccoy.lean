@@ -177,31 +177,11 @@ lemma Lemma11 (Q : R[X]) (hmQ : natDegree Q = m P) :
     linarith
   done
 
-
-lemma Lemma10 (h' : m P ≠ 0) (Q : R[X]) (hQ : Q ∈ Ann P) (hmQ : natDegree Q = m P)
- (h : P.coeff (l P Q) •  leadingCoeff Q ≠ 0) :
-   leadingCoeff (Q * P) = P.coeff (l P Q) •  leadingCoeff Q := by
-
-   sorry
-   done
-
-
-
-
-lemma Lemma8 (h' : m P ≠ 0) (Q : R[X]) (hQ : Q ∈ Ann P) (hmQ : natDegree Q = m P) :
+lemma Lemma8 (Q : R[X]) (hQ : Q ∈ Ann P) (hmQ : natDegree Q = m P) :
     P.coeff (l P Q) •  Q.leadingCoeff = 0 := by
-  dsimp [Ann] at hQ
-  by_contra! h
-  have h'' := Lemma10 P h' Q hQ hmQ h
-  have hQ1 := hQ.1
-  rw [<-Polynomial.leadingCoeff_eq_zero] at hQ1
-  rw [hQ1] at h''
-  apply h
-  rw [<- h'']
+  rw [← Lemma11 _ _ hmQ, hQ.1]
+  simp
   done
-
-
-
 
 lemma Lemma9 (h' : m P ≠ 0) (Q : R[X]) (hQ : Q ∈ Ann P) (hmQ : natDegree Q = m P) :
     natDegree (P.coeff (l P Q) • Q) < natDegree Q := by
@@ -209,12 +189,10 @@ lemma Lemma9 (h' : m P ≠ 0) (Q : R[X]) (hQ : Q ∈ Ann P) (hmQ : natDegree Q =
   apply lt_of_le_of_ne
   · exact natDegree_smul_le (coeff P (l P Q)) Q
   · intro h
-    have := Lemma8 P h' Q hQ hmQ
+    have := Lemma8 P Q hQ hmQ
     rw [← coeff_natDegree, ← h, ← coeff_smul, coeff_natDegree, leadingCoeff_eq_zero] at this
     apply Lemma7 P h' Q hQ
     exact this
-
-
 
 theorem McCoy : P ∉ R[X]⁰ ↔ ∃ (a : R), a ≠ 0 ∧ a • P = 0 := by
   constructor
