@@ -19,7 +19,6 @@ lemma Ann_nonvide (h : P ∉ R[X]⁰) : Ann P ≠ ∅ := by
     · exact hQ0
   rw [hvide] at hQmem
   exact hQmem
-  done
 
 def Anndeg := natDegree '' (Ann P)
 
@@ -27,7 +26,6 @@ lemma Anndeg_nonvide (h : P ∉ R[X]⁰) : Anndeg P ≠ ∅ := by
   dsimp [Anndeg]
   simp
   exact Ann_nonvide P h
-  done
 
 noncomputable
 def m := sInf (Anndeg P)
@@ -35,7 +33,6 @@ def m := sInf (Anndeg P)
 lemma Lemma1 {Q : R[X]} (h : Q ∈ Ann P) : m P ≤ natDegree Q := by
   dsimp[m]
   exact Nat.sInf_le (Exists.intro Q { left := h, right := rfl })
-  done
 
 lemma Lemma2 (h : P ∉ R[X]⁰) : ∃ Q ∈ Ann P, natDegree Q = m P := by
   dsimp[m]
@@ -46,7 +43,6 @@ lemma Lemma2 (h : P ∉ R[X]⁰) : ∃ Q ∈ Ann P, natDegree Q = m P := by
   dsimp [Anndeg] at this
   simp at this
   exact this
-  done
 
 lemma Lemma3 (h : P ∉ R[X]⁰) (h' : m P = 0 ) : ∃ (a : R), a ≠ 0 ∧ a • P = 0 := by
   have := Lemma2 P h
@@ -66,7 +62,6 @@ lemma Lemma3 (h : P ∉ R[X]⁰) (h' : m P = 0 ) : ∃ (a : R), a ≠ 0 ∧ a �
   constructor
   · exact hQ.1.2
   · exact hQ.1.1
-  done
 
 lemma Lemma4 (h' : m P ≠ 0) (Q : R[X]) (hQ : Q ∈ Ann P) :
     ∃ i, Q.leadingCoeff * P.coeff i ≠ 0 := by
@@ -93,7 +88,6 @@ lemma Lemma4 (h' : m P ≠ 0) (Q : R[X]) (hQ : Q ∈ Ann P) :
     · assumption
     · simp
   exact Nat.le_zero.mp hm
-  done
 
 lemma Lemma5 (h' : m P ≠ 0) (Q : R[X]) (hQ : Q ∈ Ann P) :
     ∃ i, P.coeff i • Q ≠ 0 := by
@@ -102,10 +96,8 @@ lemma Lemma5 (h' : m P ≠ 0) (Q : R[X]) (hQ : Q ∈ Ann P) :
   rw [<- Polynomial.leadingCoeff_ne_zero, Polynomial.smul_eq_C_mul,
     Polynomial.leadingCoeff_mul', Polynomial.leadingCoeff_C, mul_comm]
   · exact hi
-
   · rw [Polynomial.leadingCoeff_C, mul_comm]
     exact hi
-  done
 
 noncomputable
 def l (Q : R[X]) := sSup {i | P.coeff i • Q ≠ 0}
@@ -133,7 +125,6 @@ open Finset Nat
 lemma Lemma11 (Q : R[X]) (hmQ : natDegree Q = m P) :
   (Q * P).coeff (l P Q + m P) = P.coeff (l P Q) •  leadingCoeff Q := by
   rw [mul_comm Q, Polynomial.coeff_mul]
-
   have h1 : ∀ i, ∀j , ( l P Q < i) → P.coeff i * Q.coeff j = 0 := by
     intro k j H
     dsimp [l] at H
@@ -151,7 +142,6 @@ lemma Lemma11 (Q : R[X]) (hmQ : natDegree Q = m P) :
     rw [<-Polynomial.C_mul'] at H'
     rw [<-Polynomial.coeff_C_mul]
     exact Mathlib.Tactic.ComputeDegree.coeff_congr (congrFun (congrArg coeff H') j) rfl rfl
-
   have h2 : ∀ i, ∀j , ( m P < j) → P.coeff i * Q.coeff j = 0 := by
     intro k j H
     rw [<-hmQ] at H
@@ -175,17 +165,14 @@ lemma Lemma11 (Q : R[X]) (hmQ : natDegree Q = m P) :
     intro k _
     apply h1
     linarith
-  done
 
 lemma Lemma8 (Q : R[X]) (hQ : Q ∈ Ann P) (hmQ : natDegree Q = m P) :
     P.coeff (l P Q) •  Q.leadingCoeff = 0 := by
   rw [← Lemma11 _ _ hmQ, hQ.1]
   simp
-  done
 
 lemma Lemma9 (h' : m P ≠ 0) (Q : R[X]) (hQ : Q ∈ Ann P) (hmQ : natDegree Q = m P) :
     natDegree (P.coeff (l P Q) • Q) < natDegree Q := by
-
   apply lt_of_le_of_ne
   · exact natDegree_smul_le (coeff P (l P Q)) Q
   · intro h
@@ -228,4 +215,3 @@ theorem McCoy : P ∉ R[X]⁰ ↔ ∃ (a : R), a ≠ 0 ∧ a • P = 0 := by
     have h8 : a = 0 := by
       exact C_eq_zero.mp h7
     exact h4 h8
-  done
